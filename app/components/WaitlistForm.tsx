@@ -3,7 +3,11 @@
 import { useState } from 'react';
 import { toast, Toaster } from 'react-hot-toast';
 
-export default function WaitlistForm() {
+interface WaitlistFormProps {
+  onSubmitSuccess?: () => void;
+}
+
+export default function WaitlistForm({ onSubmitSuccess }: WaitlistFormProps) {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -28,6 +32,11 @@ export default function WaitlistForm() {
 
       setEmail('');
       toast.success('成功加入等待列表！');
+      
+      // 调用成功提交回调
+      if (onSubmitSuccess) {
+        onSubmitSuccess();
+      }
     } catch (error) {
       setError(error instanceof Error ? error.message : '提交失败，请重试');
       toast.error(error instanceof Error ? error.message : '提交失败，请重试');

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 type StatsData = {
   totalUsers: number;
@@ -8,31 +8,39 @@ type StatsData = {
   lastUpdated: string;
 };
 
-export default function WaitlistStats() {
+interface WaitlistStatsProps {
+  shouldRefresh?: boolean;
+}
+
+export default function WaitlistStats({ shouldRefresh }: WaitlistStatsProps) {
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    async function fetchStats() {
-      try {
-        const response = await fetch('/api/stats');
-        if (!response.ok) {
-          throw new Error('获取统计信息失败');
-        }
-        
-        const data = await response.json();
-        setStats(data);
-      } catch (err) {
-        console.error('统计信息加载错误:', err);
-        setError('无法加载统计信息');
-      } finally {
-        setLoading(false);
+  const fetchStats = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/stats');
+      if (!response.ok) {
+        throw new Error('获取统计信息失败');
       }
+      
+      const data = await response.json();
+      setStats(data);
+    } catch (err) {
+      console.error('统计信息加载错误:', err);
+      setError('无法加载统计信息');
+    } finally {
+      setLoading(false);
     }
-
-    fetchStats();
   }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats, shouldRefresh]);
+
+  // 导出刷新函数以便外部调用
+  WaitlistStats.refreshStats = fetchStats;
 
   if (loading) {
     return (
@@ -61,4 +69,7 @@ export default function WaitlistStats() {
       </div>
     </div>
   );
-} 
+}
+
+// 为组件添加静态方法
+WaitlistStats.refreshStats = () => {}; 

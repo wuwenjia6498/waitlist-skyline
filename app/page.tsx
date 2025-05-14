@@ -1,8 +1,18 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import WaitlistForm from "./components/WaitlistForm";
 import WaitlistStats from "./components/WaitlistStats";
 
 export default function Home() {
+  const [statsRefreshTrigger, setStatsRefreshTrigger] = useState(false);
+
+  // 当表单提交成功时触发刷新
+  const handleFormSuccess = () => {
+    setStatsRefreshTrigger(prev => !prev); // 切换状态以触发刷新
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8">
       <main className="w-full max-w-4xl mx-auto flex flex-col items-center gap-8">
@@ -25,9 +35,9 @@ export default function Home() {
 
         <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
           <h2 className="text-xl font-semibold mb-6 text-center">加入等待列表</h2>
-          <WaitlistForm />
+          <WaitlistForm onSubmitSuccess={handleFormSuccess} />
           <div className="mt-6">
-            <WaitlistStats />
+            <WaitlistStats shouldRefresh={statsRefreshTrigger} />
           </div>
         </div>
 
