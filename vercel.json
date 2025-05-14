@@ -14,8 +14,8 @@
   ],
   "routes": [
     {
-      "source": "/api/stats",
-      "destination": "/api/stats",
+      "src": "/api/stats",
+      "dest": "/api/stats",
       "headers": {
         "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
         "CDN-Cache-Control": "no-store",
