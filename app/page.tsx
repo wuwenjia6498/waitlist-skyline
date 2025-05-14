@@ -98,6 +98,15 @@ export default function Home() {
 
       <footer className="mt-20 text-center text-muted-foreground text-sm">
         <p>© {new Date().getFullYear()} Skyline. 保留所有权利。</p>
+        <p className="mt-2">
+          <a 
+            href="/admin" 
+            className="text-xs text-gray-400 hover:text-gray-500 transition-colors"
+            title="管理后台"
+          >
+            管理入口
+          </a>
+        </p>
       </footer>
     </div>
   );
