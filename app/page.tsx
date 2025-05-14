@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import Link from 'next/link';
 import WaitlistForm from "./components/WaitlistForm";
 import WaitlistStats from "./components/WaitlistStats";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "./components/ui/card";
+import { Button } from "./components/ui/button";
 
 export default function Home() {
   // 使用数字作为刷新触发器，每次递增
@@ -27,62 +28,75 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8">
+    <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-b from-background to-secondary/20">
       <main className="w-full max-w-4xl mx-auto flex flex-col items-center gap-8">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Skyline
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-xl mx-auto">
             即将推出令人惊艳的新产品！现在加入等待列表，抢先体验。
           </p>
-          <div className="mt-2">
-            <Link 
-              href="/simple" 
-              className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-            >
-              前往简易版页面 →
-            </Link>
-          </div>
         </div>
 
-        <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
-          <h2 className="text-xl font-semibold mb-6 text-center">加入等待列表</h2>
-          <WaitlistForm onSubmitSuccess={handleFormSuccess} />
-          <div className="mt-6">
-            <WaitlistStats shouldRefresh={Boolean(statsRefreshCounter % 2)} />
-          </div>
-        </div>
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-center">加入等待列表</CardTitle>
+            <CardDescription className="text-center">填写信息，率先体验我们的创新产品</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <WaitlistForm onSubmitSuccess={handleFormSuccess} />
+          </CardContent>
+          <CardFooter className="flex justify-center">
+            <div className="w-full">
+              <WaitlistStats shouldRefresh={Boolean(statsRefreshCounter % 2)} />
+            </div>
+          </CardFooter>
+        </Card>
 
-        <div className="mt-16 text-center">
-          <h3 className="text-lg font-medium mb-4">为什么选择 Skyline?</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-            <div className="p-4">
-              <div className="text-blue-500 text-2xl mb-2">✨</div>
-              <h4 className="font-medium mb-2">创新体验</h4>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                全新设计的用户界面，带来前所未有的体验
-              </p>
-            </div>
-            <div className="p-4">
-              <div className="text-blue-500 text-2xl mb-2">🚀</div>
-              <h4 className="font-medium mb-2">高效工作流</h4>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                提升您的工作效率，让您轻松应对各种挑战
-              </p>
-            </div>
-            <div className="p-4">
-              <div className="text-blue-500 text-2xl mb-2">🔒</div>
-              <h4 className="font-medium mb-2">安全可靠</h4>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                我们优先考虑您的数据安全，提供全方位保障
-              </p>
-            </div>
+        <div className="w-full max-w-4xl mt-8">
+          <h3 className="text-lg font-medium mb-6 text-center">为什么选择 Skyline?</h3>
+          <div className="flex flex-row justify-between flex-wrap gap-4">
+            <Card className="flex-1 min-w-[250px]">
+              <CardHeader>
+                <div className="text-blue-500 text-2xl mb-2 text-center">✨</div>
+                <CardTitle className="text-center text-base">创新体验</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground text-center">
+                  全新设计的用户界面，带来前所未有的体验
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card className="flex-1 min-w-[250px]">
+              <CardHeader>
+                <div className="text-blue-500 text-2xl mb-2 text-center">🚀</div>
+                <CardTitle className="text-center text-base">高效工作流</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground text-center">
+                  提升您的工作效率，让您轻松应对各种挑战
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card className="flex-1 min-w-[250px]">
+              <CardHeader>
+                <div className="text-blue-500 text-2xl mb-2 text-center">🔒</div>
+                <CardTitle className="text-center text-base">安全可靠</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground text-center">
+                  我们优先考虑您的数据安全，提供全方位保障
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>
 
-      <footer className="mt-20 text-center text-gray-500 text-sm">
+      <footer className="mt-20 text-center text-muted-foreground text-sm">
         <p>© {new Date().getFullYear()} Skyline. 保留所有权利。</p>
       </footer>
     </div>

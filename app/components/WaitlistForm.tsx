@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { toast, Toaster } from 'react-hot-toast';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
 
 interface WaitlistFormProps {
   onSubmitSuccess?: () => void;
@@ -53,33 +55,32 @@ export default function WaitlistForm({ onSubmitSuccess }: WaitlistFormProps) {
   }
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="w-full mx-auto">
       <Toaster position="top-center" />
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium mb-1">
+        <div className="space-y-2">
+          <label htmlFor="email" className="block text-sm font-medium">
             邮箱地址
           </label>
-          <input
+          <Input
             type="email"
             id="email"
             placeholder="your@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
           />
         </div>
         
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-destructive text-sm">{error}</p>}
         
-        <button
+        <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 disabled:opacity-70"
+          className="w-full"
         >
           {isLoading ? '提交中...' : '加入等待列表'}
-        </button>
+        </Button>
       </form>
     </div>
   );

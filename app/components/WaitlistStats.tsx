@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { Card, CardContent } from './ui/card';
 
 type StatsData = {
   totalUsers: number;
@@ -98,7 +99,7 @@ export default function WaitlistStats({ shouldRefresh }: WaitlistStatsProps) {
   if (loading && !stats) {
     return (
       <div className="flex justify-center p-4">
-        <div className="animate-pulse text-gray-400">加载统计信息...</div>
+        <div className="animate-pulse text-muted-foreground">加载统计信息...</div>
       </div>
     );
   }
@@ -112,19 +113,21 @@ export default function WaitlistStats({ shouldRefresh }: WaitlistStatsProps) {
   }
 
   return (
-    <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-4 backdrop-blur-sm">
-      <h3 className="text-center text-sm font-medium mb-3">等待列表统计</h3>
-      <div className="grid grid-cols-2 gap-4 text-center">
-        <div>
-          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.totalUsers}</div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">总注册人数</div>
+    <Card className="bg-secondary/40 border-none">
+      <CardContent className="pt-6">
+        <h3 className="text-center text-sm font-medium mb-3">等待列表统计</h3>
+        <div className="grid grid-cols-2 gap-4 text-center">
+          <div>
+            <div className="text-2xl font-bold text-primary">{stats.totalUsers}</div>
+            <div className="text-xs text-muted-foreground">总注册人数</div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.todayUsers}</div>
+            <div className="text-xs text-muted-foreground">今日新增</div>
+          </div>
         </div>
-        <div>
-          <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.todayUsers}</div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">今日新增</div>
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
