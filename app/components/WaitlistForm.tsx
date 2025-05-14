@@ -18,6 +18,7 @@ export default function WaitlistForm({ onSubmitSuccess }: WaitlistFormProps) {
     setError('');
 
     try {
+      console.log('提交邮箱:', email);
       const response = await fetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -25,6 +26,7 @@ export default function WaitlistForm({ onSubmitSuccess }: WaitlistFormProps) {
       });
 
       const data = await response.json();
+      console.log('服务器响应:', data);
 
       if (!response.ok) {
         throw new Error(data.message || '提交失败，请重试');
@@ -34,10 +36,15 @@ export default function WaitlistForm({ onSubmitSuccess }: WaitlistFormProps) {
       toast.success('成功加入等待列表！');
       
       // 调用成功提交回调
-      if (onSubmitSuccess) {
+      console.log('提交成功，准备调用回调函数');
+      if (typeof onSubmitSuccess === 'function') {
+        console.log('执行onSubmitSuccess回调');
         onSubmitSuccess();
+      } else {
+        console.log('未提供onSubmitSuccess回调或不是函数');
       }
     } catch (error) {
+      console.error('提交表单出错:', error);
       setError(error instanceof Error ? error.message : '提交失败，请重试');
       toast.error(error instanceof Error ? error.message : '提交失败，请重试');
     } finally {

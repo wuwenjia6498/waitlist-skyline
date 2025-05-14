@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/db';
 
+// 设置此路由不缓存
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     // 获取等待列表的总人数
@@ -18,11 +22,20 @@ export async function GET() {
       }
     });
     
-    return NextResponse.json({
-      totalUsers,
-      todayUsers,
-      lastUpdated: new Date().toISOString()
-    });
+    return NextResponse.json(
+      {
+        totalUsers,
+        todayUsers,
+        lastUpdated: new Date().toISOString()
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      }
+    );
   } catch (error) {
     console.error('获取统计信息失败:', error);
     

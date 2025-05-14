@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 
 type StatsData = {
   totalUsers: number;
@@ -16,16 +16,29 @@ export default function WaitlistStats({ shouldRefresh }: WaitlistStatsProps) {
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const prevRefreshValue = useRef(shouldRefresh);
 
+  // 获取统计数据
   const fetchStats = useCallback(async () => {
+    console.log('正在获取统计数据...');
     setLoading(true);
     try {
-      const response = await fetch('/api/stats');
+      // 添加时间戳参数避免缓存
+      const timestamp = new Date().getTime();
+      const response = await fetch(`/api/stats?t=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
       if (!response.ok) {
         throw new Error('获取统计信息失败');
       }
       
       const data = await response.json();
+      console.log('获取到的统计数据:', data);
       setStats(data);
     } catch (err) {
       console.error('统计信息加载错误:', err);
@@ -35,14 +48,23 @@ export default function WaitlistStats({ shouldRefresh }: WaitlistStatsProps) {
     }
   }, []);
 
+  // 当 shouldRefresh 变化时触发数据刷新
   useEffect(() => {
-    fetchStats();
-  }, [fetchStats, shouldRefresh]);
+    console.log('WaitlistStats useEffect 触发, shouldRefresh:', shouldRefresh, '上一次值:', prevRefreshValue.current);
+    if (shouldRefresh !== prevRefreshValue.current) {
+      console.log('shouldRefresh 已变化，正在刷新数据');
+      fetchStats();
+      prevRefreshValue.current = shouldRefresh;
+    } else if (!stats) {
+      console.log('首次加载或数据为空，正在获取数据');
+      fetchStats();
+    }
+  }, [fetchStats, shouldRefresh, stats]);
 
-  // 导出刷新函数以便外部调用
+  // 提供静态方法以便外部调用
   WaitlistStats.refreshStats = fetchStats;
 
-  if (loading) {
+  if (loading && !stats) {
     return (
       <div className="flex justify-center p-4">
         <div className="animate-pulse text-gray-400">加载统计信息...</div>
@@ -50,8 +72,12 @@ export default function WaitlistStats({ shouldRefresh }: WaitlistStatsProps) {
     );
   }
 
-  if (error || !stats) {
-    return null; // 出错时不显示组件
+  if (error && !stats) {
+    return null; // 出错且无数据时不显示组件
+  }
+
+  if (!stats) {
+    return null; // 无数据时不显示
   }
 
   return (

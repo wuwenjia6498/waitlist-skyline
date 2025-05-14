@@ -1,16 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import WaitlistForm from "./components/WaitlistForm";
 import WaitlistStats from "./components/WaitlistStats";
 
 export default function Home() {
-  const [statsRefreshTrigger, setStatsRefreshTrigger] = useState(false);
+  // 使用数字作为刷新触发器，每次递增
+  const [statsRefreshCounter, setStatsRefreshCounter] = useState(0);
+  const statsRef = useRef<typeof WaitlistStats>(null);
 
   // 当表单提交成功时触发刷新
   const handleFormSuccess = () => {
-    setStatsRefreshTrigger(prev => !prev); // 切换状态以触发刷新
+    console.log('表单提交成功，准备刷新统计数据');
+    // 递增计数器值
+    setStatsRefreshCounter(prev => prev + 1);
+    // 直接调用刷新方法作为备份
+    try {
+      if (typeof WaitlistStats.refreshStats === 'function') {
+        console.log('直接调用刷新方法');
+        WaitlistStats.refreshStats();
+      }
+    } catch (error) {
+      console.error('刷新统计数据失败:', error);
+    }
   };
 
   return (
@@ -37,7 +50,7 @@ export default function Home() {
           <h2 className="text-xl font-semibold mb-6 text-center">加入等待列表</h2>
           <WaitlistForm onSubmitSuccess={handleFormSuccess} />
           <div className="mt-6">
-            <WaitlistStats shouldRefresh={statsRefreshTrigger} />
+            <WaitlistStats shouldRefresh={Boolean(statsRefreshCounter % 2)} />
           </div>
         </div>
 
