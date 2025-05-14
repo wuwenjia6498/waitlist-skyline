@@ -10,19 +10,16 @@
         { "key": "Pragma", "value": "no-cache" },
         { "key": "Expires", "value": "0" }
       ]
-    }
-  ],
-  "routes": [
+    },
     {
-      "src": "/api/stats",
-      "dest": "/api/stats",
-      "headers": {
-        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
-        "CDN-Cache-Control": "no-store",
-        "Vercel-CDN-Cache-Control": "no-store",
-        "Pragma": "no-cache",
-        "Expires": "0"
-      }
+      "source": "/api/stats",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" },
+        { "key": "CDN-Cache-Control", "value": "no-store" },
+        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" },
+        { "key": "Pragma", "value": "no-cache" },
+        { "key": "Expires", "value": "0" }
+      ]
     }
   ]
 } 
