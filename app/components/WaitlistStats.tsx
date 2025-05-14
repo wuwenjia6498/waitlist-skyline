@@ -6,6 +6,7 @@ type StatsData = {
   totalUsers: number;
   todayUsers: number;
   lastUpdated: string;
+  nonce?: number; // 添加随机数字段
 };
 
 interface WaitlistStatsProps {
@@ -17,19 +18,36 @@ export default function WaitlistStats({ shouldRefresh }: WaitlistStatsProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const prevRefreshValue = useRef(shouldRefresh);
+  const lastFetchTime = useRef(0);
 
   // 获取统计数据
   const fetchStats = useCallback(async () => {
+    // 防止短时间内多次请求
+    const now = Date.now();
+    if (now - lastFetchTime.current < 500) {
+      console.log('请求过于频繁，跳过');
+      return;
+    }
+    lastFetchTime.current = now;
+    
     console.log('正在获取统计数据...');
     setLoading(true);
     try {
-      // 添加时间戳参数避免缓存
-      const timestamp = new Date().getTime();
-      const response = await fetch(`/api/stats?t=${timestamp}`, {
+      // 使用更复杂的缓存破坏技术
+      const timestamp = Date.now();
+      const randomPart = Math.floor(Math.random() * 1000000);
+      const noCacheParam = `nocache=${timestamp}-${randomPart}`;
+      
+      const response = await fetch(`/api/stats?${noCacheParam}`, {
+        method: 'GET',
         cache: 'no-store',
         headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
+          'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-Timestamp': timestamp.toString(),
+          'X-Random': randomPart.toString()
         }
       });
       
@@ -60,6 +78,19 @@ export default function WaitlistStats({ shouldRefresh }: WaitlistStatsProps) {
       fetchStats();
     }
   }, [fetchStats, shouldRefresh, stats]);
+
+  // 设置一个轮询机制，每隔一段时间自动刷新数据
+  useEffect(() => {
+    // 添加轮询以定期刷新数据
+    const intervalId = setInterval(() => {
+      console.log('定时轮询触发，刷新数据');
+      fetchStats();
+    }, 30000); // 每30秒刷新一次
+    
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [fetchStats]);
 
   // 提供静态方法以便外部调用
   WaitlistStats.refreshStats = fetchStats;

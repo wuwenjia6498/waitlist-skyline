@@ -4,6 +4,9 @@ import prisma from '@/app/lib/db';
 // 设置此路由不缓存
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+export const runtime = 'edge';
+export const preferredRegion = 'auto';
 
 export async function GET() {
   try {
@@ -22,17 +25,25 @@ export async function GET() {
       }
     });
     
+    // 添加随机数以确保响应不被缓存
+    const randomValue = Math.random();
+    
     return NextResponse.json(
       {
         totalUsers,
         todayUsers,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
+        nonce: randomValue // 添加随机值确保响应不同
       },
       {
         headers: {
-          'Cache-Control': 'no-store, max-age=0',
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          'CDN-Cache-Control': 'no-store',
+          'Vercel-CDN-Cache-Control': 'no-store',
+          'Surrogate-Control': 'no-store',
           'Pragma': 'no-cache',
-          'Expires': '0'
+          'Expires': '0',
+          'Vary': '*'
         }
       }
     );
